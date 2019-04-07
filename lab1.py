@@ -22,12 +22,8 @@ text_orig = re.sub('[^а-я ]', '', file.read().lower())
 print("Пример оригинала      : ", text_orig[text_shift: text_shift+100])
 
 # кодирование текста
-text_encoded = ''.join([dict[alphabet.find(c)] if c != ' ' else ' ' for c in text_orig])
+text_encoded = ''.join([dict[alphabet.find(c)] if c != ' ' else ' ' for c in text_orig[:20000]])
 print("Пример кодированного  : ", text_encoded[text_shift: text_shift+100])
-
-# декодирование текста
-text_decoded = ''.join([alphabet[dict.find(c)] if c != ' ' else ' ' for c in text_encoded])
-print("Пример декодированного: ", text_decoded[text_shift: text_shift+100])
 
 
 # 2,3)
@@ -38,11 +34,21 @@ for c in text_orig:
     amount_orig[c] += 1
 for c in text_encoded:
     amount_encoded[c] += 1
-
+del amount_orig[' ']
+del amount_encoded[' ']
+amount_orig = {k: v for k, v in sorted(amount_orig.items(), key=lambda x:x[1], reverse=True)}
+amount_encoded = {k: v for k, v in sorted(amount_encoded.items(), key=lambda x:x[1], reverse=True)}
 
 # 4)
-print('\nЧастота в оригнале (20)    :', list(amount_orig.values())[:20])
-print('Частота в кодированном (20):', list(amount_encoded.values())[:20])
+print('\nЧастота в оригнале (20)    :', ', '.join([f"{k}: {v}" for k,v in list(amount_orig.items())[:10]]))
+print('Частота в кодированном (20):',  ', '.join([f"{k}: {v}" for k,v in list(amount_encoded.items())[:10]]))
+
+# декодирование текста
+orig_sort = ''.join(amount_orig.keys())
+encoded_sort = ''.join(amount_encoded.keys())
+text_decoded = ''.join([orig_sort[encoded_sort.find(c)] if c != ' ' else ' ' for c in text_encoded])
+print("Пример декодированного: ", text_decoded[text_shift: text_shift+100])
+
 
 # вывод текстов в фаил
 fclear = open("orig.txt", "w+", encoding="utf-8")
